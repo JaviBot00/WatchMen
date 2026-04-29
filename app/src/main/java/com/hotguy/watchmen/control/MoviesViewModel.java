@@ -8,22 +8,22 @@ import com.hotguy.watchmen.data.RequestClient;
 import com.hotguy.watchmen.model.MovieResultSet;
 
 /*
-* Una clase ViewModel se hace para mantener los datos a mostrar en una activity
-* Usualmente, por ejemplo, listas para un RV
-* Simplemente hace un extends de ViewModel
-* Se suele poner un método getResults para el método de instanciación inicial de la fuente de datos.
-* Otro método loadData (es el que se usa para pedir al vm que cargue datos, incluso getResults lo usa también
-* Y por último un método setData que actualiza los datos que tenga el objeto RequestClient dentro del vm
-* Realmente el setData es llamado desde el RequesClient para "avisar" al vm de que sus datos de internet "han
-* llegado"
-*
-* Para dar "protección" a nuestros datos de modelo, se encapsula la lista de resultados en un objeto MutableLiveData (Android)
-* Esto es una de las formas, de las más usadas. No hay que aprender nada más que:
-* Hay que declarar "listaResultados" como se ve en el ejemplo
-* Y después en el setData, llamar al método especial postValue
-*
-* El método loadData (yo lo he llamado así, se puede llamar como queráis, aquí no hay override) es el que
-* se ayuda de un RequestClient para solicitar nueva info al Server de internet.
+ * Una clase ViewModel se hace para mantener los datos a mostrar en una activity
+ * Usualmente, por ejemplo, listas para un RV
+ * Simplemente hace un extends de ViewModel
+ * Se suele poner un método getResults para el método de instanciación inicial de la fuente de datos.
+ * Otro método loadData (es el que se usa para pedir al vm que cargue datos, incluso getResults lo usa también
+ * Y por último un método setData que actualiza los datos que tenga el objeto RequestClient dentro del vm
+ * Realmente el setData es llamado desde el RequesClient para "avisar" al vm de que sus datos de internet "han
+ * llegado"
+ *
+ * Para dar "protección" a nuestros datos de modelo, se encapsula la lista de resultados en un objeto MutableLiveData (Android)
+ * Esto es una de las formas, de las más usadas. No hay que aprender nada más que:
+ * Hay que declarar "listaResultados" como se ve en el ejemplo
+ * Y después en el setData, llamar al método especial postValue
+ *
+ * El método loadData (yo lo he llamado así, se puede llamar como queráis, aquí no hay override) es el que
+ * se ayuda de un RequestClient para solicitar nueva info al Server de internet.
  */
 public class MoviesViewModel extends ViewModel {
 
@@ -33,26 +33,25 @@ public class MoviesViewModel extends ViewModel {
     //Es necesario que el vm recuerde a quién le pide la info, pues cuando este Client esté listo nos
     //avisará con un "setData"
     private RequestClient myRequest;
+
     public LiveData<MovieResultSet> getResults() {
         if (resultados == null) {
-            resultados = new MutableLiveData<MovieResultSet>();
+            resultados = new MutableLiveData<>();
             //Por defecto, mostramos las pelis
-            loadData(RequestClient.TipoBusqueda.MOVIES);
+            loadData(RequestClient.TipoBusqueda.MOVIES, 1);
         }
         return resultados;
     }
 
-    public void loadData(RequestClient.TipoBusqueda tipo) {
+    public void loadData(RequestClient.TipoBusqueda tipo, int currentPage) {
         // Do an asynchronous operation to fetch data.
         myRequest = new RequestClient(this);
-        myRequest.getDataFromRESTAPI(tipo, "");
+        myRequest.getDataFromRESTAPI(tipo, "", currentPage);
         this.setData();
     }
 
     public void setData() {
         resultados.postValue(myRequest.getData());
     }
-
-
 
 }

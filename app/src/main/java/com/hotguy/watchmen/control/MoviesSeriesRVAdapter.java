@@ -22,9 +22,9 @@ import com.hotguy.watchmen.model.MovieSerieItem;
  */
 public class MoviesSeriesRVAdapter extends RecyclerView.Adapter<MoviesSeriesViewHolder> {
 
+    private final LayoutInflater mInflater;
+    private final MovieResultSet data;
 
-    private LayoutInflater mInflater;
-    private MovieResultSet data;
     public MoviesSeriesRVAdapter(Context ct, MovieResultSet data) {
         this.data = data;
         mInflater = LayoutInflater.from(ct);
@@ -34,7 +34,7 @@ public class MoviesSeriesRVAdapter extends RecyclerView.Adapter<MoviesSeriesView
     @Override
     public MoviesSeriesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.rv_main_item,
-                parent, false);
+            parent, false);
 
         //El comando anterior usa el rv_main_item que está en forma de fichero XML dentro de res/layouts
         //para saber "cómo pintar los componentes" de cada fila del RV
@@ -65,6 +65,5 @@ public class MoviesSeriesRVAdapter extends RecyclerView.Adapter<MoviesSeriesView
         if (data == null) return 0;
         return data.getResults().length;
     }
-
 
 }

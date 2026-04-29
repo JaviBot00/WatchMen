@@ -62,6 +62,10 @@ public class MovieSerieItem {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     //Aquí volvemos a "cambiar" el nombre del método get para hacerlo más "amable" al uso en nuestra app
     //Así, si queremos cambiar que dato se ve como segundo dato, podemos elegir el que nos de la gana
     //aquí
@@ -178,10 +182,6 @@ public class MovieSerieItem {
 
     public void setVote_count(long vote_count) {
         this.vote_count = vote_count;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getOriginal_name() {

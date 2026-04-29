@@ -18,19 +18,19 @@ import com.hotguy.watchmen.R;
  */
 public class MoviesSeriesViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView title;
-    private TextView subtitle;
-    private TextView text;
-    private WebView image;  //Si las imágenes están en la nube (internet), mejor un webview, no usar ImageView
+    private final TextView title;
+    private final TextView subtitle;
+    private final TextView text;
+    private final WebView image;  //Si las imágenes están en la nube (internet), mejor un webview, no usar ImageView
+
     public MoviesSeriesViewHolder(@NonNull View itemView, MoviesSeriesRVAdapter adapter) {
         super(itemView);
 
         //El constructor lo que hace es "buscar" los elementos "views" que se necesiten para cada row
-        title = (TextView) itemView.findViewById(R.id.tvTitle);
-        subtitle = (TextView) itemView.findViewById(R.id.tvSubtitle);
-        text = (TextView) itemView.findViewById(R.id.tvMovieText);
-        image = (WebView) itemView.findViewById(R.id.wv_imageView);
-
+        title = itemView.findViewById(R.id.tvTitle);
+        subtitle = itemView.findViewById(R.id.tvSubtitle);
+        text = itemView.findViewById(R.id.tvMovieText);
+        image = itemView.findViewById(R.id.wv_imageView);
     }
 
     public TextView getTitle() {

@@ -1,7 +1,6 @@
 package com.hotguy.watchmen;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -17,10 +16,10 @@ import com.hotguy.watchmen.control.MoviesSeriesRVAdapter;
 import com.hotguy.watchmen.control.MoviesViewModel;
 import com.hotguy.watchmen.data.RequestClient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class MainActivity extends AppCompatActivity {
+
+    private int currentPage;
+    private RequestClient.TipoBusqueda currentType;
 
     //Método onCreate: es el primero que se ejecuta en una app android, en una activity (pantalla)
     //Siempre se empieza a programar después de las líneas "auto" que inserta el IDE
@@ -35,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-
+        currentPage = 1;
         //A partir de aquí es nuestro código. Esta parte cambiará dependiendo de la app a programar
         //Init components. Main Buttons and RecyclerView
 
@@ -66,55 +65,37 @@ public class MainActivity extends AppCompatActivity {
             mRecyclerView.setAdapter(mAdapter);
             // Asignamos al RV un tipo de layout manager por defecto: típicamente el LinearLayoutManager
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         });
-
 
         //Ahora toca programar los botones
         //Pelis
-        Button bMovie = (Button) findViewById(R.id.btSearchMovies);
-
-        bMovie.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Cuando pulsan el botón movies, le decimos al viewmodel que cargue pelis
-                vmodel.loadData(RequestClient.TipoBusqueda.MOVIES);
-            }
+        Button bMovie = findViewById(R.id.btSearchMovies);
+        bMovie.setOnClickListener(v -> {
+            //Cuando pulsan el botón movies, le decimos al viewmodel que cargue pelis
+            vmodel.loadData(RequestClient.TipoBusqueda.MOVIES, currentPage);
+            currentType = RequestClient.TipoBusqueda.MOVIES;
         });
 
 
         //Ahora el botón de las series
-        Button bSeries = (Button) findViewById(R.id.btSearchSeries);
-
-        bSeries.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vmodel.loadData(RequestClient.TipoBusqueda.SERIES);
-            }
+        Button bSeries = findViewById(R.id.btSearchSeries);
+        bSeries.setOnClickListener(v -> {
+            vmodel.loadData(RequestClient.TipoBusqueda.SERIES, currentPage);
+            currentType = RequestClient.TipoBusqueda.SERIES;
         });
 
 
-        /*Button buSig = (Button) findViewById(R.id.);
-
-        buSig.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vmodel.loadSiguiente();
-            }
+        Button buSig = findViewById(R.id.btnNext);
+        buSig.setOnClickListener(v -> {
+            currentPage++;
+            vmodel.loadData(currentType, currentPage);
         });
 
-        Button buAnt = (Button) findViewById(R.id.);
-
-        buAnt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vmodel.loadAnterior();
-            }
-        });*/
-
-        String titulo = getResources().getString(R.string.textoTitulo);
-
-        String[] miListadePreguntas = getResources().getStringArray(R.array.preguntas);
-        ArrayList<String> miListaAL = new ArrayList<>(Arrays.asList(miListadePreguntas));
+        Button buAnt = findViewById(R.id.btnPrevious);
+        buAnt.setOnClickListener(v -> {
+            if (currentPage == 1) return;
+            currentPage--;
+            vmodel.loadData(currentType, currentPage);
+        });
     }
 }

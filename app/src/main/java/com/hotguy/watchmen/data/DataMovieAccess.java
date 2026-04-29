@@ -1,8 +1,9 @@
 package com.hotguy.watchmen.data;
 
-import java.io.IOException;
 import android.os.Handler;
 import android.os.Looper;
+
+import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -10,21 +11,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-
 /**
  * Clase DataMovieAccess
- *
+ * <p>
  * Es utilizado por la clase RequesClient. El RequestClient le proporciona
  * los datos necesarios
- *
+ * <p>
  * Se apoyará en OkHttp (librería cliente http/https)
  * Solicita una lista JSON de películas o series, y se la pasa al client para que parsee el json
  * Su única responsabilidad es obtener una petición desde client, darle forma de petición HTTP, lanzarla,
  * gestionar las dos posibiliades (se obtuvieron datos o falló) y comunicar al client que ya tiene
  * los resultados.
  */
-
-
 public class DataMovieAccess {
 
     //ESTADO
@@ -37,7 +35,7 @@ public class DataMovieAccess {
 
     //Referencia al cliente que necesita la información, como es asíncrono, lo necesitamos
     //para "informarle" cuando los datos están disponibles
-    private RequestClient client;
+    private final RequestClient client;
 
     //COMPORTAMIENTO
     public DataMovieAccess(RequestClient client) {
@@ -51,11 +49,11 @@ public class DataMovieAccess {
 
         //Petición a realizar al cliente HTTP. Patrón de diseño "Builder". Es decir "poco a poco"
         Request request = new Request.Builder()
-                .url(URL)  //dirección web
-                .get()     //método http a utilizar
-                .addHeader("accept", "application/json")  //Qué formato queremos
-                .addHeader("Authorization", "Bearer " + API_BEARER_KEY) //clave de identidad
-                .build();   //a construir la request!!
+            .url(URL)  //dirección web
+            .get()     //método http a utilizar
+            .addHeader("accept", "application/json")  //Qué formato queremos
+            .addHeader("Authorization", "Bearer " + API_BEARER_KEY) //clave de identidad
+            .build();   //a construir la request!!
 
         //realizamos la llamada al server, pero en otro thread (con enqueue)
         //Primero, una llamada al server
@@ -66,7 +64,7 @@ public class DataMovieAccess {
         //override de onFailure (evento de "algo salió mal")
         llamada.enqueue(new Callback() {
             public void onResponse(Call call, Response respuestaServer)
-                    throws IOException {
+                throws IOException {
                 //Got answer!!!!! cogemos los datos dentro del body del mensaje
                 String respuesta = respuestaServer.body().string();
 
@@ -74,13 +72,10 @@ public class DataMovieAccess {
                 //Un manejador es un "bucle" en esencia que ejecuta uno a uno todos los procesos de la App
                 Handler manejador = new Handler(Looper.getMainLooper()); //pedimos el principal de la app
                 // Send a task to the MessageQueue of the main thread
-                manejador.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Code will be executed on the main thread
-                        //Este es código que realmente se ejecuta cuando se recibe la respuesta.
-                        client.setDataFromRESTAPI(respuesta);
-                    }
+                manejador.post(() -> {
+                    // Code will be executed on the main thread
+                    //Este es código que realmente se ejecuta cuando se recibe la respuesta.
+                    client.setDataFromRESTAPI(respuesta);
                 });
             }
 
@@ -92,19 +87,14 @@ public class DataMovieAccess {
                 Handler manejador = new Handler(Looper.getMainLooper());
 
                 // Send a task to the MessageQueue of the main thread
-                manejador.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Code will be executed on the main thread
-                        client.activateError();
-                        client.setDataFromRESTAPI(respuesta);
+                manejador.post(() -> {
+                    // Code will be executed on the main thread
+                    client.activateError();
+                    client.setDataFromRESTAPI(respuesta);
 
-                    }
                 });
             }
         });
     }
-
-
 
 }

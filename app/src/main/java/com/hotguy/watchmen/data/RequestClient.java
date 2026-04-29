@@ -12,39 +12,31 @@ public class RequestClient {
 
     //IMAGES:
     /*
-    *    https://image.tmdb.org/t/p/w500/h4FuqnkBrZ6Wxi4TEeB99QvL590.jpg
-    *    el w500 significa de ancho 500px. Por defecto las fotos son formato 2x3.
-    *    Es decir, con width 500, el height es 750
-    *
-    * */
+     *    https://image.tmdb.org/t/p/w500/h4FuqnkBrZ6Wxi4TEeB99QvL590.jpg
+     *    el w500 significa de ancho 500px. Por defecto las fotos son formato 2x3.
+     *    Es decir, con width 500, el height es 750
+     *
+     * */
 
-    private static final String URL = "https://api.themoviedb.org/3/search/movie?query=%query%&include_adult=false&language=en-US&page=1";
-    private static final String URLAllMovies = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=vote_average.desc&without_genres=99,10755&vote_count.gte=200";
-    private static final String URLAllSeries = "https://api.themoviedb.org/3/discover/tv?include_adult=false&language=en-US&page=1&sort_by=vote_average.desc&vote_count.gte=200";
+    private static final String URL = "https://api.themoviedb.org/3/search/movie?query=%query%&include_adult=false&language=en-US&page=%page%";
+    private static final String URLAllMovies = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=%page%&sort_by=vote_average.desc&without_genres=99,10755&vote_count.gte=200";
+    private static final String URLAllSeries = "https://api.themoviedb.org/3/discover/tv?include_adult=false&language=en-US&page=%page%&sort_by=vote_average.desc&vote_count.gte=200";
 
 
     //Atributos
     private boolean error;
     private MovieResultSet data;
-    private MoviesViewModel vmInstance;
-
-    //Vamos a distinguir tres tipos de búsquedas, mejores pelis, mejores series, pelis/series con título que contenga
-    //el parámetro "query" dentro
-    public enum TipoBusqueda {
-        MOVIES,
-        SERIES,
-        QUERY
-    }
-
-    //Métodos
+    private final MoviesViewModel vmInstance;
 
     public RequestClient(MoviesViewModel vmInstance) {
         error = false;
         this.vmInstance = vmInstance;
     }
 
+    //Métodos
+
     //Método usado para seleccionar el tipo de búsqueda que pediremos a TMDB
-    public void getDataFromRESTAPI(TipoBusqueda tipo, String query) {
+    public void getDataFromRESTAPI(TipoBusqueda tipo, String query, int currentPage) {
         //Reseteamos el modo error para que no se guarden "errores" previos
         error = false;
         //Instanciamos un objeto de acceso a datos, el que sabe hacer request de los datos
@@ -53,10 +45,13 @@ public class RequestClient {
         String queryURL;
         if (tipo == TipoBusqueda.MOVIES) {
             queryURL = URLAllMovies;
+            queryURL = queryURL.replace("%page%", String.valueOf(currentPage));
         } else if (tipo == TipoBusqueda.SERIES) {
             queryURL = URLAllSeries;
-        } else
-            queryURL = URL.replace("%query%",query);
+            queryURL = queryURL.replace("%page%", String.valueOf(currentPage));
+        } else {
+            queryURL = URL.replace("%query%", query).replace("%page%", String.valueOf(currentPage));
+        }
 
         myDMA.requestData(queryURL);
     }
@@ -83,6 +78,14 @@ public class RequestClient {
 
     public MovieResultSet getData() {
         return data;
+    }
+
+    //Vamos a distinguir tres tipos de búsquedas, mejores pelis, mejores series, pelis/series con título que contenga
+    //el parámetro "query" dentro
+    public enum TipoBusqueda {
+        MOVIES,
+        SERIES,
+        QUERY
     }
 }
 
